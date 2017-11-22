@@ -1,1377 +1,1568 @@
 {
-  "swagger" : "2.0",
-  "info" : {
-    "description" : "This version  (1.1) contains\n - basic searches of the registers (plural) \n - claims functionality \n - contacts functionality",
-    "version" : "1.2",
-    "title" : "Official Assignee Service Information  System v4",
-    "contact" : {
-      "email" : "apisupport@business.govt.nz"
+  "swagger": "2.0",
+  "info": {
+    "title": "Official Assignee Service Information  System v4",
+    "description": "This version  (1.1) contains\n - basic searches of the registers (plural) \n - claims functionality \n - contacts functionality",
+    "contact": {
+      "email": "apisupport@business.govt.nz"
+    },
+    "version": "1.2"
+  },
+  "host": "sandbox.api.business.govt.nz",
+  "basePath": "/services/v1/insolvencies",
+  "schemes": [
+    "https"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/bankruptcies/{estate_number}": {
+      "get": {
+        "tags": [
+          "Bankruptcies"
+        ],
+        "summary": "Gets details of the bankrupt estate",
+        "description": "Returns details of the insolvency",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "estate_number",
+            "in": "path",
+            "description": "The unique estate number of the insolvency",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "## Description:\n  [Provide an overview of the purpose or function of the operationd here]\n## Pre-conditions:\n  * [List conditions that must have been previously met by consumer to successfully call the operation]\n## Post-conditions:\n  * [Describe the state of the system or entity after the operation is successful]\n## Error messages \n  | HTTP Status | Error code | Description |\n  | ---- | ---- | ---- |\n  | [HTTP Status] | [MSG-xxx] | [Error description] |\n## Examples\n  | Scenario | Request | Description |\n  | ---- | ---- | ---- |\n  | [Describe the scenario] | [Include the URL, headers and if applicable body] | [Include the HTTP response on success, headers and if applicable, body] |\n## Maps to existing API (for existing G2B API users):\n  * [Existing G2B API link or operation name]",
+            "schema": {
+              "$ref": "#/definitions/BankruptcyDetail"
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "Date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "Service-Version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "401": {
+            "description": "The requester is not authenticated."
+          },
+          "403": {
+            "description": "The requester is not authorised for this operation."
+          },
+          "404": {
+            "description": "The specified estate (number) does not exist."
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      }
+    },
+    "/bankruptcies": {
+      "get": {
+        "tags": [
+          "Bankruptcies"
+        ],
+        "summary": "Gets a search result of Insolvencies",
+        "description": "Search the insolvency register for a bunkrupt (current or discharged) person)",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "surname",
+            "in": "query",
+            "description": "Surname of the Bankrupt Person (requires one name to be searched)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "middle-name",
+            "in": "query",
+            "description": "Middle name of the Bankrupt Person (requires one name to be searched)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "first-name",
+            "in": "query",
+            "description": "First Name of the Bankrupt Person (requires one name to be searched)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "The status of the Insolvency, leave blank for all",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "current",
+              "annulled",
+              "discharged"
+            ]
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page in the collection to return. Default is page 1.",
+            "required": false,
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          },
+          {
+            "name": "page-size",
+            "in": "query",
+            "description": "The requested number of items to include in each page returned. Default is 20.",
+            "required": false,
+            "type": "integer",
+            "default": 20,
+            "minimum": 1
+          },
+          {
+            "name": "sort-order",
+            "in": "query",
+            "description": "The order to sort the collection in. Can be 'asc' or 'desc'.",
+            "required": false,
+            "type": "string",
+            "default": "asc",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          {
+            "name": "sort-by",
+            "in": "query",
+            "description": "The property to sort the collection by.",
+            "required": false,
+            "type": "string",
+            "default": "name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The search results for the given provider search parameters.",
+            "schema": {
+              "$ref": "#/definitions/EstateSearchResults"
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "Date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "Service-Version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "The combination of search enquiry parameters is invalid.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "401": {
+            "description": "The requester is not authenticated."
+          },
+          "403": {
+            "description": "The requester is not authorised for this operation."
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      }
+    },
+    "/liquidations/{estate_number}": {
+      "get": {
+        "tags": [
+          "Liquidations"
+        ],
+        "summary": "Gets details of the liquidated company",
+        "description": "Returns details of the insolvency",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "estate_number",
+            "in": "path",
+            "description": "The unique estate number of the insolvency",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the insolvency",
+            "schema": {
+              "$ref": "#/definitions/LiquidationDetail"
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "Date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "Service-Version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "401": {
+            "description": "The requester is not authenticated."
+          },
+          "403": {
+            "description": "The requester is not authorised for this operation."
+          },
+          "404": {
+            "description": "The specified estate (number) does not exist."
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      }
+    },
+    "/liquidations": {
+      "get": {
+        "tags": [
+          "Liquidations"
+        ],
+        "summary": "Gets a search result of Insolvencies",
+        "description": "Search the insolvency register for a bunkrupt (current or discharged) person)",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Search for Name of the Insolvent Company",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "The status of the Insolvency, leave blank for all",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "completed",
+              "current",
+              "terminated"
+            ]
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page in the collection to return. Default is page 1.",
+            "required": false,
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          },
+          {
+            "name": "page-size",
+            "in": "query",
+            "description": "The requested number of items to include in each page returned. Default is 20.",
+            "required": false,
+            "type": "integer",
+            "default": 20,
+            "minimum": 1
+          },
+          {
+            "name": "sort-order",
+            "in": "query",
+            "description": "The order to sort the collection in. Can be 'asc' or 'desc'.",
+            "required": false,
+            "type": "string",
+            "default": "asc",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          {
+            "name": "sort-by",
+            "in": "query",
+            "description": "The property to sort the collection by.",
+            "required": false,
+            "type": "string",
+            "default": "name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The search results for the given provider search parameters.",
+            "schema": {
+              "$ref": "#/definitions/EstateSearchResults"
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "Date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "Service-Version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "The combination of search enquiry parameters is invalid.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "401": {
+            "description": "The requester is not authenticated."
+          },
+          "403": {
+            "description": "The requester is not authorised for this operation."
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      }
+    },
+    "/claim": {
+      "get": {
+        "tags": [
+          "Claims"
+        ],
+        "summary": "Gets a search result of claims",
+        "description": "Search the insolvency register for a claim.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "businessService",
+            "in": "query",
+            "description": "The type of the insolvency procedure, leave blank for all",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "The state of the insolvency procedure, leave blank for all",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "potential",
+              "recieved",
+              "suspended",
+              "admitted",
+              "duplicate",
+              "vetted",
+              "error",
+              "withdrawn",
+              "rejected"
+            ]
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page in the collection to return. Default is page 1.",
+            "required": false,
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          },
+          {
+            "name": "page-size",
+            "in": "query",
+            "description": "The requested number of items to include in each page returned. Default is 20.",
+            "required": false,
+            "type": "integer",
+            "default": 20,
+            "minimum": 1
+          },
+          {
+            "name": "sort-order",
+            "in": "query",
+            "description": "The order to sort the collection in. Can be 'asc' or 'desc'.",
+            "required": false,
+            "type": "string",
+            "default": "asc",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          {
+            "name": "sort-by",
+            "in": "query",
+            "description": "The property to sort the collection by.",
+            "required": false,
+            "type": "string",
+            "default": "name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The search results for the given provider search parameters.",
+            "schema": {
+              "$ref": "#/definitions/ClaimSearchResult"
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "Date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "Service-Version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "The combination of search enquiry parameters is invalid.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "401": {
+            "description": "The requester is not authenticated."
+          },
+          "403": {
+            "description": "The requester is not authorised for this operation."
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Claims"
+        ],
+        "summary": "Modifies a claim",
+        "description": "Modifies an existing claim if the uuid / etag matches the submitted resource.",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "claim",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClaimApplication"
+            }
+          },
+          {
+            "name": "api-business-govt-nz-Request-Id",
+            "in": "header",
+            "description": "Request id. Provide a UUID that is unique to this request.  This header is optional.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "If-Unmodified-Since",
+            "in": "header",
+            "description": "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
+            "required": false,
+            "type": "string",
+            "format": "date"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Claim application(s) created.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ClaimDetail"
+              }
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "eTag": {
+                "description": "Unique identifier confirming the latest version of the resource.",
+                "type": "string"
+              },
+              "date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "service-version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "403": {
+            "description": "The request must contain at least one of If-Unmodified-Since or If-Match http headers. Please GET a fresh representation and try again.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "413": {
+            "description": "The request precondition failed. Pleae GET a fresh representation and try again.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Claims"
+        ],
+        "summary": "Adds a new claim for processing",
+        "description": "Adds a new claim to the estate(s) company with the given estate identifier (s). ",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "claim",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClaimApplication"
+            }
+          },
+          {
+            "name": "api-business-govt-nz-Request-Id",
+            "in": "header",
+            "description": "Request id. Provide a UUID that is unique to this request.  This header is optional.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Claim application(s) created.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ClaimDetail"
+              }
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "eTag": {
+                "description": "Unique identifier confirming the latest version of the resource.",
+                "type": "string"
+              },
+              "date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).\n",
+                "type": "string",
+                "format": "date-time"
+              },
+              "service-version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "403": {
+            "description": "Insufficient prviledges.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "businessService2",
+          "in": "query",
+          "required": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/claim/{claim_number}": {
+      "get": {
+        "tags": [
+          "Claims"
+        ],
+        "summary": "Gets  claim details",
+        "description": "Claims is not implemented as a sub resource of Estate as the cardinalitiy to estate is actually 0 or n.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "claim_number",
+            "in": "path",
+            "description": "The unique claim number",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The detail for the given claim record.",
+            "schema": {
+              "$ref": "#/definitions/ClaimDetail"
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "Date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "Service-Version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "The combination of search enquiry parameters is invalid.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "401": {
+            "description": "The requester is not authenticated."
+          },
+          "403": {
+            "description": "The requester is not authorised for this operation."
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      }
     }
   },
-  "host" : "sandbox.api.business.govt.nz",
-  "basePath" : "/services/v1/insolvencies",
-  "tags" : [ {
-    "name" : "Bankruptcies",
-    "description" : "Personal Insolvencies"
-  }, {
-    "name" : "Liquidations",
-    "description" : "Company Insolvencies"
-  }, {
-    "name" : "SIO",
-    "description" : "Summary Installment Orders"
-  }, {
-    "name" : "NAP",
-    "description" : "No Asset Procedures"
-  }, {
-    "name" : "Claims",
-    "description" : "Claims against an insolvency procedure"
-  } ],
-  "schemes" : [ "https" ],
-  "produces" : [ "application/json" ],
-  "paths" : {
-    "/bankruptcies/{estate_number}" : {
-      "get" : {
-        "tags" : [ "Bankruptcies" ],
-        "summary" : "Gets details of the bankrupt estate",
-        "description" : "Returns details of the insolvency",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "estate_number",
-          "in" : "path",
-          "description" : "The unique estate number of the insolvency",
-          "required" : true,
-          "type" : "integer"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "## Description:\n  [Provide an overview of the purpose or function of the operationd here]\n## Pre-conditions:\n  * [List conditions that must have been previously met by consumer to successfully call the operation]\n## Post-conditions:\n  * [Describe the state of the system or entity after the operation is successful]\n## Error messages \n  | HTTP Status | Error code | Description |\n  | ---- | ---- | ---- |\n  | [HTTP Status] | [MSG-xxx] | [Error description] |\n## Examples\n  | Scenario | Request | Description |\n  | ---- | ---- | ---- |\n  | [Describe the scenario] | [Include the URL, headers and if applicable body] | [Include the HTTP response on success, headers and if applicable, body] |\n## Maps to existing API (for existing G2B API users):\n  * [Existing G2B API link or operation name]",
-            "schema" : {
-              "$ref" : "#/definitions/BankruptcyDetail"
-            },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "Date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time)."
-              },
-              "Service-Version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
-              }
-            }
-          },
-          "401" : {
-            "description" : "The requester is not authenticated."
-          },
-          "403" : {
-            "description" : "The requester is not authorised for this operation."
-          },
-          "404" : {
-            "description" : "The specified estate (number) does not exist."
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          }
-        }
-      }
+  "tags": [
+    {
+      "name": "Bankruptcies",
+      "description": "Personal Insolvencies"
     },
-    "/bankruptcies" : {
-      "get" : {
-        "tags" : [ "Bankruptcies" ],
-        "summary" : "Gets a search result of Insolvencies",
-        "description" : "Search the insolvency register for a bunkrupt (current or discharged) person)",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "surname",
-          "in" : "query",
-          "description" : "Surname of the Bankrupt Person (requires one name to be searched)",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "middle-name",
-          "in" : "query",
-          "description" : "Middle name of the Bankrupt Person (requires one name to be searched)",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "first-name",
-          "in" : "query",
-          "description" : "First Name of the Bankrupt Person (requires one name to be searched)",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "status",
-          "in" : "query",
-          "description" : "The status of the Insolvency, leave blank for all",
-          "required" : false,
-          "type" : "string",
-          "enum" : [ "current", "annulled", "discharged" ]
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "The page in the collection to return. Default is page 1.",
-          "required" : false,
-          "type" : "integer",
-          "default" : 1,
-          "minimum" : 1
-        }, {
-          "name" : "page-size",
-          "in" : "query",
-          "description" : "The requested number of items to include in each page returned. Default is 20.",
-          "required" : false,
-          "type" : "integer",
-          "default" : 20,
-          "minimum" : 1
-        }, {
-          "name" : "sort-order",
-          "in" : "query",
-          "description" : "The order to sort the collection in. Can be 'asc' or 'desc'.",
-          "required" : false,
-          "type" : "string",
-          "default" : "asc",
-          "enum" : [ "asc", "desc" ]
-        }, {
-          "name" : "sort-by",
-          "in" : "query",
-          "description" : "The property to sort the collection by.",
-          "required" : false,
-          "type" : "string",
-          "default" : "name"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "The search results for the given provider search parameters.",
-            "schema" : {
-              "$ref" : "#/definitions/EstateSearchResults"
-            },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "Date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time)."
-              },
-              "Service-Version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
-              }
-            }
-          },
-          "400" : {
-            "description" : "The combination of search enquiry parameters is invalid.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "401" : {
-            "description" : "The requester is not authenticated."
-          },
-          "403" : {
-            "description" : "The requester is not authorised for this operation."
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          }
-        }
-      }
+    {
+      "name": "Liquidations",
+      "description": "Company Insolvencies"
     },
-    "/liquidations/{estate_number}" : {
-      "get" : {
-        "tags" : [ "Liquidations" ],
-        "summary" : "Gets details of the liquidated company",
-        "description" : "Returns details of the insolvency",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "estate_number",
-          "in" : "path",
-          "description" : "The unique estate number of the insolvency",
-          "required" : true,
-          "type" : "integer"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Details of the insolvency",
-            "schema" : {
-              "$ref" : "#/definitions/LiquidationDetail"
-            },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "Date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time)."
-              },
-              "Service-Version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
-              }
-            }
-          },
-          "401" : {
-            "description" : "The requester is not authenticated."
-          },
-          "403" : {
-            "description" : "The requester is not authorised for this operation."
-          },
-          "404" : {
-            "description" : "The specified estate (number) does not exist."
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          }
-        }
-      }
+    {
+      "name": "SIO",
+      "description": "Summary Installment Orders"
     },
-    "/liquidations" : {
-      "get" : {
-        "tags" : [ "Liquidations" ],
-        "summary" : "Gets a search result of Insolvencies",
-        "description" : "Search the insolvency register for a bunkrupt (current or discharged) person)",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "name",
-          "in" : "query",
-          "description" : "Search for Name of the Insolvent Company",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "status",
-          "in" : "query",
-          "description" : "The status of the Insolvency, leave blank for all",
-          "required" : false,
-          "type" : "string",
-          "enum" : [ "completed", "current", "terminated" ]
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "The page in the collection to return. Default is page 1.",
-          "required" : false,
-          "type" : "integer",
-          "default" : 1,
-          "minimum" : 1
-        }, {
-          "name" : "page-size",
-          "in" : "query",
-          "description" : "The requested number of items to include in each page returned. Default is 20.",
-          "required" : false,
-          "type" : "integer",
-          "default" : 20,
-          "minimum" : 1
-        }, {
-          "name" : "sort-order",
-          "in" : "query",
-          "description" : "The order to sort the collection in. Can be 'asc' or 'desc'.",
-          "required" : false,
-          "type" : "string",
-          "default" : "asc",
-          "enum" : [ "asc", "desc" ]
-        }, {
-          "name" : "sort-by",
-          "in" : "query",
-          "description" : "The property to sort the collection by.",
-          "required" : false,
-          "type" : "string",
-          "default" : "name"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "The search results for the given provider search parameters.",
-            "schema" : {
-              "$ref" : "#/definitions/EstateSearchResults"
-            },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "Date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time)."
-              },
-              "Service-Version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
-              }
-            }
-          },
-          "400" : {
-            "description" : "The combination of search enquiry parameters is invalid.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "401" : {
-            "description" : "The requester is not authenticated."
-          },
-          "403" : {
-            "description" : "The requester is not authorised for this operation."
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          }
-        }
-      }
+    {
+      "name": "NAP",
+      "description": "No Asset Procedures"
     },
-    "/claim" : {
-      "get" : {
-        "tags" : [ "Claims" ],
-        "summary" : "Gets a search result of claims",
-        "description" : "Search the insolvency register for a claim.",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "businessService",
-          "in" : "query",
-          "description" : "The type of the insolvency procedure, leave blank for all",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "status",
-          "in" : "query",
-          "description" : "The state of the insolvency procedure, leave blank for all",
-          "required" : false,
-          "type" : "string",
-          "enum" : [ "potential", "recieved", "suspended", "admitted", "duplicate", "vetted", "error", "withdrawn", "rejected" ]
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "The page in the collection to return. Default is page 1.",
-          "required" : false,
-          "type" : "integer",
-          "default" : 1,
-          "minimum" : 1
-        }, {
-          "name" : "page-size",
-          "in" : "query",
-          "description" : "The requested number of items to include in each page returned. Default is 20.",
-          "required" : false,
-          "type" : "integer",
-          "default" : 20,
-          "minimum" : 1
-        }, {
-          "name" : "sort-order",
-          "in" : "query",
-          "description" : "The order to sort the collection in. Can be 'asc' or 'desc'.",
-          "required" : false,
-          "type" : "string",
-          "default" : "asc",
-          "enum" : [ "asc", "desc" ]
-        }, {
-          "name" : "sort-by",
-          "in" : "query",
-          "description" : "The property to sort the collection by.",
-          "required" : false,
-          "type" : "string",
-          "default" : "name"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "The search results for the given provider search parameters.",
-            "schema" : {
-              "$ref" : "#/definitions/ClaimSearchResult"
-            },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "Date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time)."
-              },
-              "Service-Version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
-              }
-            }
-          },
-          "400" : {
-            "description" : "The combination of search enquiry parameters is invalid.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "401" : {
-            "description" : "The requester is not authenticated."
-          },
-          "403" : {
-            "description" : "The requester is not authorised for this operation."
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          }
+    {
+      "name": "Claims",
+      "description": "Claims against an insolvency procedure"
+    }
+  ],
+  "definitions": {
+    "ClaimDetail": {
+      "description": "Detail of a submitted claim. ",
+      "type": "object",
+      "properties": {
+        "claimId": {
+          "description": "Unique identifier for the claim.",
+          "type": "integer",
+          "example": 32164315
+        },
+        "estateId": {
+          "description": "unique id for the estate the claim is attached to.      ",
+          "type": "integer",
+          "example": 789468
+        },
+        "insolvencyType": {
+          "description": "The business service / the kind of process the debtor is going through.",
+          "type": "string",
+          "example": "Bankruptcy"
+        },
+        "createdName": {
+          "description": "The name of the user / organision that filed this claim.",
+          "type": "string",
+          "example": "John Smith"
+        },
+        "createdBy": {
+          "description": "The user name of the user that created the claim.",
+          "type": "string",
+          "example": "JohnS"
+        },
+        "created": {
+          "format": "date",
+          "description": "The date the claim was created.",
+          "type": "string",
+          "example": "2016-06-01T00:00:00.000Z"
+        },
+        "status": {
+          "description": "The current state of the claim. Available state transitions depend on role.",
+          "enum": [
+            "potential",
+            "recieved",
+            "suspended",
+            "admitted",
+            "duplicate",
+            "vetted",
+            "error",
+            "withdrawn",
+            "rejected"
+          ],
+          "type": "string",
+          "example": "withdrawn"
+        },
+        "applicationType": {
+          "description": "The loose \"type\" of claim - used to assist with determining priorty.",
+          "enum": [
+            "Wages, holiday pay or redundancy",
+            "Court awarded adjudication",
+            "Unpaid taxes or levies",
+            "Secured debt",
+            "Part of current court action",
+            "Interest"
+          ],
+          "type": "string",
+          "example": "Wages, holiday pay or redundancy"
+        },
+        "claimDescription": {
+          "description": "The user name of the user that created the claim.",
+          "type": "string",
+          "example": "Owed 30 weeks of unpaid wages plus holiday pay. Note that this description could be very long."
+        },
+        "version": {
+          "description": "The unique version number of the claim record.",
+          "type": "integer",
+          "example": 6
+        },
+        "statusDate": {
+          "format": "date",
+          "description": "The date of the last state transition.",
+          "type": "string",
+          "example": "2016-06-01T00:00:00.000Z"
+        },
+        "underApplealYN": {
+          "description": "Flag indicating if the insolvency is surrently under appeal",
+          "type": "boolean",
+          "example": false
+        },
+        "priory": {
+          "description": "The determined priority of the claim.",
+          "type": "integer",
+          "example": 3
+        },
+        "creditorReference": {
+          "description": "The non-unique reference number provided by the creditor.",
+          "type": "string",
+          "example": "ABC-CORP-0001"
+        },
+        "notifiedValue": {
+          "description": "The value of the (potential) claim as included in the claim application or statement of affairs.",
+          "type": "integer",
+          "example": 51000
+        },
+        "claimValue": {
+          "description": "The value of the claim as accepted into the insolcency precedure.",
+          "type": "integer",
+          "example": 50501
+        },
+        "claimValueTba": {
+          "description": "Flag indicating whether the value of the claim has been deterined by ITS or not.",
+          "type": "boolean",
+          "example": true
+        },
+        "contractIntetest": {
+          "description": "-?.",
+          "type": "string",
+          "example": "??? ???"
+        },
+        "irdNumber": {
+          "description": "The IRD number of the claimant.",
+          "type": "integer",
+          "example": 987654321
+        },
+        "includeOaNumberGstYn": {
+          "description": "-?.",
+          "type": "boolean",
+          "example": false
+        },
+        "oaGstAmount": {
+          "description": "The amount of GST due to AO services.",
+          "type": "integer",
+          "example": 10000
+        },
+        "wagesTaxRate": {
+          "description": "The applicable tax rate of wages related to the claim.",
+          "type": "integer",
+          "example": 28
+        },
+        "comments": {
+          "description": "OA comments",
+          "type": "string",
+          "example": "Comment about the specifics of the claim."
+        },
+        "itsAwareDate": {
+          "format": "date",
+          "description": "-?.",
+          "type": "string",
+          "example": "2016-06-01T00:00:00.000Z"
+        },
+        "loggedWithItsDate": {
+          "format": "date",
+          "description": "-?.",
+          "type": "string",
+          "example": "2016-06-01T00:00:00.000Z"
+        },
+        "admittedValue": {
+          "description": "-?.\n",
+          "type": "integer",
+          "example": 50100
+        },
+        "withdrawnReason": {
+          "description": "If withdrwan, the reasons for the withdrwal.\n",
+          "type": "string",
+          "example": "Reason for withdrwal."
+        },
+        "withdrwanByName": {
+          "description": "The logged in user that withdrew the claim application.\n",
+          "type": "string",
+          "example": "John Smith"
+        },
+        "withdrawnDate": {
+          "format": "date",
+          "description": "If withdrawn, the date withdrawn.",
+          "type": "string",
+          "example": "2016-06-01T00:00:00.000Z"
+        },
+        "jointPaidToDate": {
+          "description": "-?.\n",
+          "type": "string",
+          "example": "??? ???"
+        },
+        "ringfenceTypeCode": {
+          "description": "-?.\n",
+          "type": "string",
+          "example": "??? ???"
+        },
+        "reasonForChange": {
+          "description": "-?.\n",
+          "type": "string",
+          "example": "??? ???"
+        },
+        "largeClaimFiledAlertSent": {
+          "description": "-?.\n",
+          "type": "boolean",
+          "example": false
+        },
+        "creditReportSent": {
+          "description": "-?.",
+          "type": "string",
+          "example": "??? ???"
         }
       },
-      "post" : {
-        "tags" : [ "Claims" ],
-        "summary" : "Adds a new claim for processing",
-        "description" : "Adds a new claim to the estate(s) company with the given estate identifier (s). ",
-        "consumes" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "claim",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ClaimApplication"
-          }
-        }, {
-          "name" : "api-business-govt-nz-Request-Id",
-          "in" : "header",
-          "description" : "Request id. Provide a UUID that is unique to this request.  This header is optional.",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Claim application(s) created.",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/ClaimDetail"
-              }
-            },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "eTag" : {
-                "type" : "string",
-                "description" : "Unique identifier confirming the latest version of the resource."
-              },
-              "date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time).\n"
-              },
-              "service-version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid request data.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "403" : {
-            "description" : "Insufficient prviledges.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
+      "discriminator": "entityType"
+    },
+    "Laboratory": {
+      "description": "Scratch pad for stuff I am figuring out..",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "links": {
+              "description": "The array of results",
+              "type": "array",
+              "example": ""
             }
           }
-        }
-      },
-      "put" : {
-        "tags" : [ "Claims" ],
-        "summary" : "Modifies a claim",
-        "description" : "Modifies an existing claim if the uuid / etag matches the submitted resource.",
-        "consumes" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "claim",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ClaimApplication"
+        },
+        {}
+      ]
+    },
+    "ClaimApplication": {
+      "description": "A claim is an assertion by a creditor that they are owed funds in an insolvency procedure. In order to be accepted into Trust Accounting a claim must be both substantiated and accepted. ",
+      "type": "object",
+      "properties": {
+        "estates": {
+          "type": "array",
+          "items": {
+            "description": "Other names applicable to Individual.",
+            "type": "integer",
+            "example": "7894681, 465484"
           }
-        }, {
-          "name" : "api-business-govt-nz-Request-Id",
-          "in" : "header",
-          "description" : "Request id. Provide a UUID that is unique to this request.  This header is optional.",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "If-Match",
-          "in" : "header",
-          "description" : "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "If-Unmodified-Since",
-          "in" : "header",
-          "description" : "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
-          "required" : false,
-          "type" : "string",
-          "format" : "date"
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Claim application(s) created.",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/ClaimDetail"
-              }
-            },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "eTag" : {
-                "type" : "string",
-                "description" : "Unique identifier confirming the latest version of the resource."
-              },
-              "date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time)."
-              },
-              "service-version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid request data.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "403" : {
-            "description" : "The request must contain at least one of If-Unmodified-Since or If-Match http headers. Please GET a fresh representation and try again.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "413" : {
-            "description" : "The request precondition failed. Pleae GET a fresh representation and try again.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
-            }
-          }
+        },
+        "insolvencyType": {
+          "description": "The business service / the kind of process the debtor is going through.",
+          "type": "string",
+          "example": "Bankruptcy"
+        },
+        "createdName": {
+          "description": "The name of the user / organision that filed this claim.",
+          "type": "string",
+          "example": "John Smith"
+        },
+        "createdBy": {
+          "description": "The user name of the user that created the claim.",
+          "type": "string",
+          "example": "JohnS"
+        },
+        "applicationType": {
+          "description": "The loose \"type\" of claim - used to assist with determining priorty.",
+          "enum": [
+            "Wages, holiday pay or redundancy",
+            "Court awarded adjudication",
+            "Unpaid taxes or levies",
+            "Secured debt",
+            "Part of current court action",
+            "Interest"
+          ],
+          "type": "string",
+          "example": "Wages, holiday pay or redundancy"
+        },
+        "claimDescription": {
+          "description": "The user name of the user that created the claim.",
+          "type": "string",
+          "example": "Owed 30 weeks of unpaid wages plus holiday pay. Note that this description could be very long."
         }
       }
     },
-    "/claim/{claim_number}" : {
-      "get" : {
-        "tags" : [ "Claims" ],
-        "summary" : "Gets  claim details",
-        "description" : "Claims is not implemented as a sub resource of Estate as the cardinalitiy to estate is actually 0 or n.",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "claim_number",
-          "in" : "path",
-          "description" : "The unique claim number",
-          "required" : true,
-          "type" : "integer"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "The detail for the given claim record.",
-            "schema" : {
-              "$ref" : "#/definitions/ClaimDetail"
+    "ClaimApplicationUpdate": {
+      "description": "This entity is used by customer.  \n",
+      "type": "object",
+      "properties": {
+        "estates": {
+          "description": "The business service / the kind of process the debtor is going\n",
+          "type": "array",
+          "items": {
+            "description": "Other names applicable to Individual.",
+            "type": "integer",
+            "example": "7894681, 465484"
+          }
+        },
+        "ClientReference": {
+          "description": "The business service / the kind of process the debtor is going through.\n",
+          "type": "string",
+          "example": "Bankruptcy"
+        },
+        "createdName": {
+          "description": "The name of the user / organision that filed this claim.",
+          "type": "string",
+          "example": "John Smith"
+        },
+        "createdBy": {
+          "description": "The user name of the user that created the claim.",
+          "type": "string",
+          "example": "JohnS"
+        },
+        "applicationType": {
+          "description": "The loose \"type\" of claim - used to assist with determining priorty.",
+          "enum": [
+            "Wages, holiday pay or redundancy",
+            "Court awarded adjudication",
+            "Unpaid taxes or levies",
+            "Secured debt",
+            "Part of current court action",
+            "Interest"
+          ],
+          "type": "string",
+          "example": "Wages, holiday pay or redundancy"
+        },
+        "claimDescription": {
+          "description": "The user name of the user that created the claim.",
+          "type": "string",
+          "example": "Owed 30 weeks of unpaid wages plus holiday pay. Note that this description could be very long."
+        }
+      }
+    },
+    "BankruptcyDetail": {
+      "description": "The",
+      "allOf": [
+        {
+          "properties": {
+            "estateNumber": {
+              "description": "The estate number",
+              "type": "string",
+              "example": "123456"
             },
-            "headers" : {
-              "api-business-govt-nz-Request-Id" : {
-                "type" : "string",
-                "description" : "MBIE Request id header"
-              },
-              "api-business-govt-nz-Correlation-Id" : {
-                "type" : "string",
-                "description" : "MBIE Correlation id header"
-              },
-              "Date" : {
-                "type" : "string",
-                "format" : "date-time",
-                "description" : "Response parameter. Date/time the response was generated (in Greenwich mean time)."
-              },
-              "Service-Version" : {
-                "type" : "string",
-                "description" : "The minor version of the API."
+            "insolvencyType": {
+              "description": "The date the financial service provider last filed their annual confirmation.",
+              "type": "string",
+              "example": "Adjudicated bankrupt on debtor's application under S.47"
+            },
+            "name": {
+              "description": "The date the financial service provider was registered and became accessible on the public register.",
+              "type": "string",
+              "example": "John Smith"
+            },
+            "alternateNames": {
+              "description": "Other names applicable to Individual.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "Joe Bloggs"
               }
+            },
+            "monthYearBirth": {
+              "description": "The date the financial service provider was registered and became accessible on the public register.",
+              "type": "string",
+              "example": "March 1989"
+            },
+            "tradingName": {
+              "description": "POssible trading names of the individual.",
+              "type": "string",
+              "example": "Address not available"
+            },
+            "addressAtAdjudication": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Address not available"
+            },
+            "suppliedAddress": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Address not available"
+            },
+            "insolvencyStatus": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Currently in Liquidation"
+            },
+            "ajudicationDateTime": {
+              "format": "date",
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "2016-06-01T00:00:00.000Z"
+            },
+            "court": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Hamilton High Court"
+            },
+            "occupationAtAdjudication": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "IT Contractor"
+            },
+            "employmentStatus": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Currently employed"
+            },
+            "multipleInsolvencies": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "No"
+            },
+            "dischargeDate": {
+              "format": "date",
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "2016-06-01T00:00:00.000Z"
+            },
+            "petitionType": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Debtor Petition"
+            },
+            "officeForEnquiries": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Christchurch"
+            },
+            "link": {
+              "$ref": "#/definitions/Link"
             }
-          },
-          "400" : {
-            "description" : "The combination of search enquiry parameters is invalid.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
+          }
+        },
+        {}
+      ]
+    },
+    "LiquidationDetail": {
+      "description": "The",
+      "allOf": [
+        {
+          "properties": {
+            "estateNumber": {
+              "description": "The estate number",
+              "type": "string",
+              "example": "123456"
+            },
+            "insolvencyType": {
+              "description": "The date the financial service provider last filed their annual confirmation.",
+              "type": "string",
+              "example": "Adjudicated bankrupt on debtor's application under S.47"
+            },
+            "name": {
+              "description": "The date the financial service provider was registered and became accessible on the public register.",
+              "type": "string",
+              "example": "John Smith"
+            },
+            "alternateNames": {
+              "description": "Other names applicable to Individual.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "Joe Bloggs"
+              }
+            },
+            "monthYearBirth": {
+              "description": "The date the financial service provider was registered and became accessible on the public register.",
+              "type": "string",
+              "example": "March 1989"
+            },
+            "directorsShareholders": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "Joe Bloggs"
+              }
+            },
+            "addressAtAdjudication": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Address not available"
+            },
+            "suppliedAddress": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Address not available"
+            },
+            "insolvencyStatus": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Currently in Liquidation"
+            },
+            "liquidationDateTime": {
+              "format": "date",
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "2016-06-01T00:00:00.000Z"
+            },
+            "court": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Hamilton High Court"
+            },
+            "occupationAtAdjudication": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "IT Contractor"
+            },
+            "employmentStatus": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Currently employed"
+            },
+            "multipleInsolvencies": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "No"
+            },
+            "dischargeDate": {
+              "format": "date",
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "2016-06-01T00:00:00.000Z"
+            },
+            "petitionType": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Debtor Petition"
+            },
+            "officeForEnquiries": {
+              "description": "List of directors and shareholders of the company.",
+              "type": "string",
+              "example": "Christchurch"
+            },
+            "link": {
+              "$ref": "#/definitions/Link"
             }
-          },
-          "401" : {
-            "description" : "The requester is not authenticated."
-          },
-          "403" : {
-            "description" : "The requester is not authorised for this operation."
-          },
-          "500" : {
-            "description" : "An unexpected internal server error occurred.",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorDescription"
+          }
+        },
+        {}
+      ]
+    },
+    "Link": {
+      "description": "JSON representation of the ATOM pub link format",
+      "required": [
+        "href",
+        "rel"
+      ],
+      "properties": {
+        "rel": {
+          "description": "The rel attribute specifies the relationship between the current resource and the linked resource.",
+          "type": "string",
+          "example": "self"
+        },
+        "href": {
+          "description": "Specifies the URL of the resource the link goes to",
+          "type": "string",
+          "example": "http://api.business.govt.nz/v1/insolvency/"
+        }
+      }
+    },
+    "ClaimSearchResult": {
+      "description": "A single claim search summary result",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "claimNumber": {
+              "description": "The unique insolvency register number",
+              "type": "string",
+              "example": "1234567"
+            },
+            "createdName": {
+              "description": "The name of the person  who creted the claim",
+              "type": "string",
+              "example": "John Smith"
+            },
+            "created": {
+              "description": "Other names applicable to Individual.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "Joe Bloggs"
+              }
+            },
+            "description": {
+              "type": "string",
+              "example": "Description of the specifics of the claim"
+            },
+            "status": {
+              "enum": [
+                "potential",
+                "recieved",
+                "suspended",
+                "admitted",
+                "duplicate",
+                "vetted",
+                "error",
+                "withdrawn",
+                "rejected"
+              ],
+              "type": "string",
+              "example": "Withdrawn"
+            },
+            "link": {
+              "$ref": "#/definitions/Link",
+              "description": "Link to the detail record"
+            }
+          }
+        },
+        {}
+      ]
+    },
+    "EstateSearchResult": {
+      "description": "A single bankruptcy search summary result",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "estateNumber": {
+              "description": "The unique insolvency register number",
+              "type": "string",
+              "example": "1234567"
+            },
+            "name": {
+              "description": "The Main name of the Individual",
+              "type": "string",
+              "example": "John Smith"
+            },
+            "alternateNames": {
+              "description": "Other names applicable to Individual.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "Joe Bloggs"
+              }
+            },
+            "status": {
+              "description": "The current status of the insolvency",
+              "type": "string",
+              "example": "Bankrupt (Current)"
+            },
+            "link": {
+              "$ref": "#/definitions/Link",
+              "description": "Link to the detail record"
+            }
+          }
+        },
+        {}
+      ]
+    },
+    "ErrorDescription": {
+      "description": "Representation of generic error response",
+      "required": [
+        "errorCode",
+        "errorMessage"
+      ],
+      "properties": {
+        "errorMessage": {
+          "type": "string",
+          "example": "Request failed"
+        },
+        "errorCode": {
+          "type": "string",
+          "example": "E01"
+        },
+        "errorDescription": {
+          "type": "string",
+          "example": "An unexpected error occurred servicing the request."
+        }
+      }
+    },
+    "CollectionMetadata": {
+      "description": "Metadata associated with a paginated collection",
+      "required": [
+        "links",
+        "page",
+        "pageSize",
+        "totalItems",
+        "totalPages"
+      ],
+      "properties": {
+        "sortBy": {
+          "description": "The property the collection is sorted on. This is optional and may not be supported by all collections",
+          "type": "string",
+          "example": "name"
+        },
+        "page": {
+          "description": "The page in the collection",
+          "minimum": 1,
+          "type": "integer",
+          "example": 1
+        },
+        "sortOrder": {
+          "description": "The order the collection is sorted in. This is optional and may not be supported by all collections. Valid values are 'asc', 'desc'",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "type": "string",
+          "example": "asc"
+        },
+        "totalItems": {
+          "description": "The total number of results/items in this collection",
+          "type": "integer",
+          "example": 42
+        },
+        "pageSize": {
+          "description": "The number of results/items returned per page of results",
+          "type": "integer",
+          "example": 20
+        },
+        "links": {
+          "description": "The list of links to navigate this collection",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Link"
+          }
+        },
+        "totalPages": {
+          "description": "The number of pages in the collection given the current pageSize.  Note this will have the value ceiling(totalItems / pageSize).",
+          "type": "integer",
+          "example": 13
+        }
+      }
+    },
+    "EstateSearchResults": {
+      "description": "Paged collection of the results returned for an oasis search.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/CollectionMetadata"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "searchCriteria": {
+              "description": "The search criteria",
+              "type": "string",
+              "example": "Name starts with 'AA', status = All"
+            },
+            "items": {
+              "description": "The array of results",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EstateSearchResult"
+              }
             }
           }
         }
-      }
+      ]
     }
   },
-  "definitions" : {
-    "ClaimDetail" : {
-      "type" : "object",
-      "discriminator" : "entityType",
-      "properties" : {
-        "claimId" : {
-          "type" : "integer",
-          "example" : 32164315,
-          "description" : "Unique identifier for the claim."
-        },
-        "estateId" : {
-          "type" : "integer",
-          "example" : 789468,
-          "description" : "unique id for the estate the claim is attached to.      "
-        },
-        "insolvencyType" : {
-          "type" : "string",
-          "example" : "Bankruptcy",
-          "description" : "The business service / the kind of process the debtor is going through."
-        },
-        "createdName" : {
-          "type" : "string",
-          "example" : "John Smith",
-          "description" : "The name of the user / organision that filed this claim."
-        },
-        "createdBy" : {
-          "type" : "string",
-          "example" : "JohnS",
-          "description" : "The user name of the user that created the claim."
-        },
-        "created" : {
-          "type" : "string",
-          "format" : "date",
-          "example" : "2016-06-01T00:00:00.000Z",
-          "description" : "The date the claim was created."
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "withdrawn",
-          "description" : "The current state of the claim. Available state transitions depend on role.",
-          "enum" : [ "potential", "recieved", "suspended", "admitted", "duplicate", "vetted", "error", "withdrawn", "rejected" ]
-        },
-        "applicationType" : {
-          "type" : "string",
-          "example" : "Wages, holiday pay or redundancy",
-          "description" : "The loose \"type\" of claim - used to assist with determining priorty.",
-          "enum" : [ "Wages, holiday pay or redundancy", "Court awarded adjudication", "Unpaid taxes or levies", "Secured debt", "Part of current court action", "Interest" ]
-        },
-        "claimDescription" : {
-          "type" : "string",
-          "example" : "Owed 30 weeks of unpaid wages plus holiday pay. Note that this description could be very long.",
-          "description" : "The user name of the user that created the claim."
-        },
-        "version" : {
-          "type" : "integer",
-          "example" : 6,
-          "description" : "The unique version number of the claim record."
-        },
-        "statusDate" : {
-          "type" : "string",
-          "format" : "date",
-          "example" : "2016-06-01T00:00:00.000Z",
-          "description" : "The date of the last state transition."
-        },
-        "underApplealYN" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "Flag indicating if the insolvency is surrently under appeal"
-        },
-        "priory" : {
-          "type" : "integer",
-          "example" : 3,
-          "description" : "The determined priority of the claim."
-        },
-        "creditorReference" : {
-          "type" : "string",
-          "example" : "ABC-CORP-0001",
-          "description" : "The non-unique reference number provided by the creditor."
-        },
-        "notifiedValue" : {
-          "type" : "integer",
-          "example" : 51000,
-          "description" : "The value of the (potential) claim as included in the claim application or statement of affairs."
-        },
-        "claimValue" : {
-          "type" : "integer",
-          "example" : 50501,
-          "description" : "The value of the claim as accepted into the insolcency precedure."
-        },
-        "claimValueTba" : {
-          "type" : "boolean",
-          "example" : true,
-          "description" : "Flag indicating whether the value of the claim has been deterined by ITS or not."
-        },
-        "contractIntetest" : {
-          "type" : "string",
-          "example" : "??? ???",
-          "description" : "-?."
-        },
-        "irdNumber" : {
-          "type" : "integer",
-          "example" : 987654321,
-          "description" : "The IRD number of the claimant."
-        },
-        "includeOaNumberGstYn" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "-?."
-        },
-        "oaGstAmount" : {
-          "type" : "integer",
-          "example" : 10000,
-          "description" : "The amount of GST due to AO services."
-        },
-        "wagesTaxRate" : {
-          "type" : "integer",
-          "example" : 28,
-          "description" : "The applicable tax rate of wages related to the claim."
-        },
-        "comments" : {
-          "type" : "string",
-          "example" : "Comment about the specifics of the claim.",
-          "description" : "OA comments"
-        },
-        "itsAwareDate" : {
-          "type" : "string",
-          "format" : "date",
-          "example" : "2016-06-01T00:00:00.000Z",
-          "description" : "-?."
-        },
-        "loggedWithItsDate" : {
-          "type" : "string",
-          "format" : "date",
-          "example" : "2016-06-01T00:00:00.000Z",
-          "description" : "-?."
-        },
-        "admittedValue" : {
-          "type" : "integer",
-          "example" : 50100,
-          "description" : "-?.\n"
-        },
-        "withdrawnReason" : {
-          "type" : "string",
-          "example" : "Reason for withdrwal.",
-          "description" : "If withdrwan, the reasons for the withdrwal.\n"
-        },
-        "withdrwanByName" : {
-          "type" : "string",
-          "example" : "John Smith",
-          "description" : "The logged in user that withdrew the claim application.\n"
-        },
-        "withdrawnDate" : {
-          "type" : "string",
-          "format" : "date",
-          "example" : "2016-06-01T00:00:00.000Z",
-          "description" : "If withdrawn, the date withdrawn."
-        },
-        "jointPaidToDate" : {
-          "type" : "string",
-          "example" : "??? ???",
-          "description" : "-?.\n"
-        },
-        "ringfenceTypeCode" : {
-          "type" : "string",
-          "example" : "??? ???",
-          "description" : "-?.\n"
-        },
-        "reasonForChange" : {
-          "type" : "string",
-          "example" : "??? ???",
-          "description" : "-?.\n"
-        },
-        "largeClaimFiledAlertSent" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "-?.\n"
-        },
-        "creditReportSent" : {
-          "type" : "string",
-          "example" : "??? ???",
-          "description" : "-?."
-        }
-      },
-      "description" : "Detail of a submitted claim. "
+  "parameters": {
+    "RequestIdParameter": {
+      "name": "api-business-govt-nz-Request-Id",
+      "in": "header",
+      "description": "Request id. Provide a UUID that is unique to this request.  This header is optional.",
+      "required": false,
+      "type": "string"
     },
-    "Laboratory" : {
-      "allOf" : [ {
-        "type" : "object",
-        "properties" : {
-          "links" : {
-            "type" : "array",
-            "example" : "",
-            "description" : "The array of results"
-          }
-        }
-      }, { } ],
-      "description" : "Scratch pad for stuff I am figuring out.."
+    "IfMatchParameter": {
+      "name": "If-Match",
+      "in": "header",
+      "description": "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
+      "required": true,
+      "type": "string"
     },
-    "ClaimApplication" : {
-      "type" : "object",
-      "properties" : {
-        "estates" : {
-          "type" : "array",
-          "items" : {
-            "type" : "integer",
-            "example" : "7894681, 465484",
-            "description" : "Other names applicable to Individual."
-          }
-        },
-        "insolvencyType" : {
-          "type" : "string",
-          "example" : "Bankruptcy",
-          "description" : "The business service / the kind of process the debtor is going through."
-        },
-        "createdName" : {
-          "type" : "string",
-          "example" : "John Smith",
-          "description" : "The name of the user / organision that filed this claim."
-        },
-        "createdBy" : {
-          "type" : "string",
-          "example" : "JohnS",
-          "description" : "The user name of the user that created the claim."
-        },
-        "applicationType" : {
-          "type" : "string",
-          "example" : "Wages, holiday pay or redundancy",
-          "description" : "The loose \"type\" of claim - used to assist with determining priorty.",
-          "enum" : [ "Wages, holiday pay or redundancy", "Court awarded adjudication", "Unpaid taxes or levies", "Secured debt", "Part of current court action", "Interest" ]
-        },
-        "claimDescription" : {
-          "type" : "string",
-          "example" : "Owed 30 weeks of unpaid wages plus holiday pay. Note that this description could be very long.",
-          "description" : "The user name of the user that created the claim."
-        }
-      },
-      "description" : "A claim is an assertion by a creditor that they are owed funds in an insolvency procedure. In order to be accepted into Trust Accounting a claim must be both substantiated and accepted. "
+    "IfNoneMatchParameter": {
+      "name": "If-None-Match",
+      "in": "header",
+      "description": "Optimisation mechanism to indicate that a GET should only return the requested object if the current version of the object does not have an ETag matching the value supplied.",
+      "required": false,
+      "type": "string"
     },
-    "ClaimApplicationUpdate" : {
-      "type" : "object",
-      "properties" : {
-        "estates" : {
-          "type" : "array",
-          "description" : "The business service / the kind of process the debtor is going\n",
-          "items" : {
-            "type" : "integer",
-            "example" : "7894681, 465484",
-            "description" : "Other names applicable to Individual."
-          }
-        },
-        "ClientReference" : {
-          "type" : "string",
-          "example" : "Bankruptcy",
-          "description" : "The business service / the kind of process the debtor is going through.\n"
-        },
-        "createdName" : {
-          "type" : "string",
-          "example" : "John Smith",
-          "description" : "The name of the user / organision that filed this claim."
-        },
-        "createdBy" : {
-          "type" : "string",
-          "example" : "JohnS",
-          "description" : "The user name of the user that created the claim."
-        },
-        "applicationType" : {
-          "type" : "string",
-          "example" : "Wages, holiday pay or redundancy",
-          "description" : "The loose \"type\" of claim - used to assist with determining priorty.",
-          "enum" : [ "Wages, holiday pay or redundancy", "Court awarded adjudication", "Unpaid taxes or levies", "Secured debt", "Part of current court action", "Interest" ]
-        },
-        "claimDescription" : {
-          "type" : "string",
-          "example" : "Owed 30 weeks of unpaid wages plus holiday pay. Note that this description could be very long.",
-          "description" : "The user name of the user that created the claim."
-        }
-      },
-      "description" : "This entity is used by customer.  \n"
-    },
-    "BankruptcyDetail" : {
-      "allOf" : [ {
-        "properties" : {
-          "estateNumber" : {
-            "type" : "string",
-            "example" : "123456",
-            "description" : "The estate number"
-          },
-          "insolvencyType" : {
-            "type" : "string",
-            "example" : "Adjudicated bankrupt on debtor's application under S.47",
-            "description" : "The date the financial service provider last filed their annual confirmation."
-          },
-          "name" : {
-            "type" : "string",
-            "example" : "John Smith",
-            "description" : "The date the financial service provider was registered and became accessible on the public register."
-          },
-          "alternateNames" : {
-            "type" : "array",
-            "description" : "Other names applicable to Individual.",
-            "items" : {
-              "type" : "string",
-              "example" : "Joe Bloggs"
-            }
-          },
-          "monthYearBirth" : {
-            "type" : "string",
-            "example" : "March 1989",
-            "description" : "The date the financial service provider was registered and became accessible on the public register."
-          },
-          "tradingName" : {
-            "type" : "string",
-            "example" : "Address not available",
-            "description" : "POssible trading names of the individual."
-          },
-          "addressAtAdjudication" : {
-            "type" : "string",
-            "example" : "Address not available",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "suppliedAddress" : {
-            "type" : "string",
-            "example" : "Address not available",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "insolvencyStatus" : {
-            "type" : "string",
-            "example" : "Currently in Liquidation",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "ajudicationDateTime" : {
-            "type" : "string",
-            "format" : "date",
-            "example" : "2016-06-01T00:00:00.000Z",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "court" : {
-            "type" : "string",
-            "example" : "Hamilton High Court",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "occupationAtAdjudication" : {
-            "type" : "string",
-            "example" : "IT Contractor",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "employmentStatus" : {
-            "type" : "string",
-            "example" : "Currently employed",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "multipleInsolvencies" : {
-            "type" : "string",
-            "example" : "No",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "dischargeDate" : {
-            "type" : "string",
-            "format" : "date",
-            "example" : "2016-06-01T00:00:00.000Z",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "petitionType" : {
-            "type" : "string",
-            "example" : "Debtor Petition",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "officeForEnquiries" : {
-            "type" : "string",
-            "example" : "Christchurch",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "link" : {
-            "$ref" : "#/definitions/Link"
-          }
-        }
-      }, { } ],
-      "description" : "The"
-    },
-    "LiquidationDetail" : {
-      "allOf" : [ {
-        "properties" : {
-          "estateNumber" : {
-            "type" : "string",
-            "example" : "123456",
-            "description" : "The estate number"
-          },
-          "insolvencyType" : {
-            "type" : "string",
-            "example" : "Adjudicated bankrupt on debtor's application under S.47",
-            "description" : "The date the financial service provider last filed their annual confirmation."
-          },
-          "name" : {
-            "type" : "string",
-            "example" : "John Smith",
-            "description" : "The date the financial service provider was registered and became accessible on the public register."
-          },
-          "alternateNames" : {
-            "type" : "array",
-            "description" : "Other names applicable to Individual.",
-            "items" : {
-              "type" : "string",
-              "example" : "Joe Bloggs"
-            }
-          },
-          "monthYearBirth" : {
-            "type" : "string",
-            "example" : "March 1989",
-            "description" : "The date the financial service provider was registered and became accessible on the public register."
-          },
-          "directorsShareholders" : {
-            "type" : "array",
-            "description" : "List of directors and shareholders of the company.",
-            "items" : {
-              "type" : "string",
-              "example" : "Joe Bloggs"
-            }
-          },
-          "addressAtAdjudication" : {
-            "type" : "string",
-            "example" : "Address not available",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "suppliedAddress" : {
-            "type" : "string",
-            "example" : "Address not available",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "insolvencyStatus" : {
-            "type" : "string",
-            "example" : "Currently in Liquidation",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "liquidationDateTime" : {
-            "type" : "string",
-            "format" : "date",
-            "example" : "2016-06-01T00:00:00.000Z",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "court" : {
-            "type" : "string",
-            "example" : "Hamilton High Court",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "occupationAtAdjudication" : {
-            "type" : "string",
-            "example" : "IT Contractor",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "employmentStatus" : {
-            "type" : "string",
-            "example" : "Currently employed",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "multipleInsolvencies" : {
-            "type" : "string",
-            "example" : "No",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "dischargeDate" : {
-            "type" : "string",
-            "format" : "date",
-            "example" : "2016-06-01T00:00:00.000Z",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "petitionType" : {
-            "type" : "string",
-            "example" : "Debtor Petition",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "officeForEnquiries" : {
-            "type" : "string",
-            "example" : "Christchurch",
-            "description" : "List of directors and shareholders of the company."
-          },
-          "link" : {
-            "$ref" : "#/definitions/Link"
-          }
-        }
-      }, { } ],
-      "description" : "The"
-    },
-    "Link" : {
-      "required" : [ "href", "rel" ],
-      "properties" : {
-        "rel" : {
-          "type" : "string",
-          "example" : "self",
-          "description" : "The rel attribute specifies the relationship between the current resource and the linked resource."
-        },
-        "href" : {
-          "type" : "string",
-          "example" : "http://api.business.govt.nz/v1/insolvency/",
-          "description" : "Specifies the URL of the resource the link goes to"
-        }
-      },
-      "description" : "JSON representation of the ATOM pub link format"
-    },
-    "ClaimSearchResult" : {
-      "allOf" : [ {
-        "type" : "object",
-        "properties" : {
-          "claimNumber" : {
-            "type" : "string",
-            "example" : "1234567",
-            "description" : "The unique insolvency register number"
-          },
-          "createdName" : {
-            "type" : "string",
-            "example" : "John Smith",
-            "description" : "The name of the person  who creted the claim"
-          },
-          "created" : {
-            "type" : "array",
-            "description" : "Other names applicable to Individual.",
-            "items" : {
-              "type" : "string",
-              "example" : "Joe Bloggs"
-            }
-          },
-          "description" : {
-            "type" : "string",
-            "example" : "Description of the specifics of the claim"
-          },
-          "status" : {
-            "type" : "string",
-            "example" : "Withdrawn",
-            "enum" : [ "potential", "recieved", "suspended", "admitted", "duplicate", "vetted", "error", "withdrawn", "rejected" ]
-          },
-          "link" : {
-            "description" : "Link to the detail record",
-            "$ref" : "#/definitions/Link"
-          }
-        }
-      }, { } ],
-      "description" : "A single claim search summary result"
-    },
-    "EstateSearchResult" : {
-      "allOf" : [ {
-        "type" : "object",
-        "properties" : {
-          "estateNumber" : {
-            "type" : "string",
-            "example" : "1234567",
-            "description" : "The unique insolvency register number"
-          },
-          "name" : {
-            "type" : "string",
-            "example" : "John Smith",
-            "description" : "The Main name of the Individual"
-          },
-          "alternateNames" : {
-            "type" : "array",
-            "description" : "Other names applicable to Individual.",
-            "items" : {
-              "type" : "string",
-              "example" : "Joe Bloggs"
-            }
-          },
-          "status" : {
-            "type" : "string",
-            "example" : "Bankrupt (Current)",
-            "description" : "The current status of the insolvency"
-          },
-          "link" : {
-            "description" : "Link to the detail record",
-            "$ref" : "#/definitions/Link"
-          }
-        }
-      }, { } ],
-      "description" : "A single bankruptcy search summary result"
-    },
-    "ErrorDescription" : {
-      "required" : [ "errorCode", "errorMessage" ],
-      "properties" : {
-        "errorMessage" : {
-          "type" : "string",
-          "example" : "Request failed"
-        },
-        "errorCode" : {
-          "type" : "string",
-          "example" : "E01"
-        },
-        "errorDescription" : {
-          "type" : "string",
-          "example" : "An unexpected error occurred servicing the request."
-        }
-      },
-      "description" : "Representation of generic error response"
-    },
-    "CollectionMetadata" : {
-      "required" : [ "links", "page", "pageSize", "totalItems", "totalPages" ],
-      "properties" : {
-        "sortBy" : {
-          "type" : "string",
-          "example" : "name",
-          "description" : "The property the collection is sorted on. This is optional and may not be supported by all collections"
-        },
-        "page" : {
-          "type" : "integer",
-          "example" : 1,
-          "description" : "The page in the collection",
-          "minimum" : 1
-        },
-        "sortOrder" : {
-          "type" : "string",
-          "example" : "asc",
-          "description" : "The order the collection is sorted in. This is optional and may not be supported by all collections. Valid values are 'asc', 'desc'",
-          "enum" : [ "asc", "desc" ]
-        },
-        "totalItems" : {
-          "type" : "integer",
-          "example" : 42,
-          "description" : "The total number of results/items in this collection"
-        },
-        "pageSize" : {
-          "type" : "integer",
-          "example" : 20,
-          "description" : "The number of results/items returned per page of results"
-        },
-        "links" : {
-          "type" : "array",
-          "description" : "The list of links to navigate this collection",
-          "items" : {
-            "$ref" : "#/definitions/Link"
-          }
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "example" : 13,
-          "description" : "The number of pages in the collection given the current pageSize.  Note this will have the value ceiling(totalItems / pageSize)."
-        }
-      },
-      "description" : "Metadata associated with a paginated collection"
-    },
-    "EstateSearchResults" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CollectionMetadata"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "searchCriteria" : {
-            "type" : "string",
-            "example" : "Name starts with 'AA', status = All",
-            "description" : "The search criteria"
-          },
-          "items" : {
-            "type" : "array",
-            "description" : "The array of results",
-            "items" : {
-              "$ref" : "#/definitions/EstateSearchResult"
-            }
-          }
-        }
-      } ],
-      "description" : "Paged collection of the results returned for an oasis search."
-    }
-  },
-  "parameters" : {
-    "RequestIdParameter" : {
-      "name" : "api-business-govt-nz-Request-Id",
-      "in" : "header",
-      "description" : "Request id. Provide a UUID that is unique to this request.  This header is optional.",
-      "required" : false,
-      "type" : "string"
-    },
-    "IfMatchParameter" : {
-      "name" : "If-Match",
-      "in" : "header",
-      "description" : "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
-      "required" : true,
-      "type" : "string"
-    },
-    "IfNoneMatchParameter" : {
-      "name" : "If-None-Match",
-      "in" : "header",
-      "description" : "Optimisation mechanism to indicate that a GET should only return the requested object if the current version of the object does not have an ETag matching the value supplied.",
-      "required" : false,
-      "type" : "string"
-    },
-    "IfUnmodifedSinceParameter" : {
-      "name" : "If-Unmodified-Since",
-      "in" : "header",
-      "description" : "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
-      "required" : false,
-      "type" : "string",
-      "format" : "date"
+    "IfUnmodifedSinceParameter": {
+      "name": "If-Unmodified-Since",
+      "in": "header",
+      "description": "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
+      "required": false,
+      "type": "string",
+      "format": "date"
     }
   }
 }
