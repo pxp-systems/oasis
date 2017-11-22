@@ -1,0 +1,1344 @@
+swagger: '2.0'
+info:
+  title: Official Assignee Service Information  System v4
+  description: >-
+        This version  (1.1) contains
+         - basic searches of the registers (plural) 
+         - claims functionality 
+         - contacts functionality
+  version: "1.2"
+  contact:
+    email: apisupport@business.govt.nz
+host: sandbox.api.business.govt.nz
+schemes:
+  - https
+produces:
+  - application/json
+basePath: /services/v1/insolvencies
+tags:
+  - name: Bankruptcies
+    description: Personal Insolvencies
+  - name: Liquidations
+    description: Company Insolvencies 
+  - name: SIO
+    description: Summary Installment Orders
+  - name: NAP
+    description: No Asset Procedures
+  - name: Claims
+    description: Claims against an insolvency procedure  
+paths:
+  '/bankruptcies/{estate_number}':
+    get:
+      summary: >-
+        Gets details of the bankrupt estate
+      description: >-
+        Returns details of the insolvency
+      tags:
+        - Bankruptcies
+      produces:
+        - application/json
+      parameters:
+        - description: >-
+            The unique estate number of the insolvency
+          name: estate_number
+          required: true
+          type: integer
+          in: path
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/BankruptcyDetail'
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            Date:
+              description: Response parameter. Date/time the response was generated (in Greenwich mean time).
+              format: date-time
+              type: string
+            Service-Version:
+              description: The minor version of the API.
+              type: string
+          description: >-
+            ## Description:
+              [Provide an overview of the purpose or function of the operationd here]
+            ## Pre-conditions:
+              * [List conditions that must have been previously met by consumer to successfully call the operation]
+            ## Post-conditions:
+              * [Describe the state of the system or entity after the operation is successful]
+            ## Error messages 
+              | HTTP Status | Error code | Description |
+              | ---- | ---- | ---- |
+              | [HTTP Status] | [MSG-xxx] | [Error description] |
+            ## Examples
+              | Scenario | Request | Description |
+              | ---- | ---- | ---- |
+              | [Describe the scenario] | [Include the URL, headers and if applicable body] | [Include the HTTP response on success, headers and if applicable, body] |
+            ## Maps to existing API (for existing G2B API users):
+              * [Existing G2B API link or operation name]
+        '401':
+          description: The requester is not authenticated.
+        '403':
+          description: The requester is not authorised for this operation.
+        '404':
+          description: The specified estate (number) does not exist.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.
+  '/bankruptcies':
+    get:
+      summary: Gets a search result of Insolvencies
+      description: >-
+        Search the insolvency register for a bunkrupt (current or discharged) person)
+      produces:
+        - application/json
+      tags:
+        - Bankruptcies
+      parameters:
+        - description: >-
+            Surname of the Bankrupt Person (requires one name to be searched)
+          name: surname
+          type: string
+          required: false
+          in: query
+        - description: >-
+            Middle name of the Bankrupt Person (requires one name to be searched)
+          name: middle-name
+          type: string
+          required: false
+          in: query
+        - description: >-
+            First Name of the Bankrupt Person (requires one name to be searched)
+          name: first-name
+          type: string
+          required: false
+          in: query
+        - description: The status of the Insolvency, leave blank for all
+          name: status
+          enum:
+            - current
+            - annulled
+            - discharged
+          type: string
+          required: false
+          in: query
+        - default: 1
+          minimum: 1
+          description: The page in the collection to return. Default is page 1.
+          name: page
+          type: integer
+          required: false
+          in: query
+        - default: 20
+          minimum: 1
+          description: >-
+            The requested number of items to include in each page returned.
+            Default is 20.
+          name: page-size
+          type: integer
+          required: false
+          in: query
+        - default: asc
+          description: The order to sort the collection in. Can be 'asc' or 'desc'.
+          name: sort-order
+          enum:
+            - asc
+            - desc
+          type: string
+          required: false
+          in: query
+        - default: name
+          description: The property to sort the collection by.
+          name: sort-by
+          type: string
+          required: false
+          in: query
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/EstateSearchResults'
+          description: The search results for the given provider search parameters.
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            Date:
+              description: Response parameter. Date/time the response was generated (in Greenwich mean time).
+              format: date-time
+              type: string
+            Service-Version:
+              description: The minor version of the API.
+              type: string
+        '400':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: The combination of search enquiry parameters is invalid.
+        '401':
+          description: The requester is not authenticated.
+        '403':
+          description: The requester is not authorised for this operation.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.
+  '/liquidations/{estate_number}':
+    get:
+      summary: >-
+        Gets details of the liquidated company
+      description: >-
+        Returns details of the insolvency
+      produces:
+        - application/json
+      tags:
+        - Liquidations
+      parameters:
+        - description: >-
+            The unique estate number of the insolvency
+          name: estate_number
+          required: true
+          type: integer
+          in: path
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/LiquidationDetail'
+          description: Details of the insolvency
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            Date:
+              description: Response parameter. Date/time the response was generated (in Greenwich mean time).
+              format: date-time
+              type: string
+            Service-Version:
+              description: The minor version of the API.
+              type: string
+        '401':
+          description: The requester is not authenticated.
+        '403':
+          description: The requester is not authorised for this operation.
+        '404':
+          description: The specified estate (number) does not exist.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.
+  '/liquidations':
+    get:
+      summary: Gets a search result of Insolvencies
+      description: >-
+        Search the insolvency register for a bunkrupt (current or discharged) person)
+      produces:
+        - application/json
+      tags:
+        - Liquidations
+      parameters:
+        - description: >-
+            Search for Name of the Insolvent Company
+          name: name
+          type: string
+          required: false
+          in: query
+        - description: The status of the Insolvency, leave blank for all
+          name: status
+          enum:
+            - completed
+            - current
+            - terminated
+          type: string
+          required: false
+          in: query
+        - default: 1
+          minimum: 1
+          description: The page in the collection to return. Default is page 1.
+          name: page
+          type: integer
+          required: false
+          in: query
+        - default: 20
+          minimum: 1
+          description: >-
+            The requested number of items to include in each page returned.
+            Default is 20.
+          name: page-size
+          type: integer
+          required: false
+          in: query
+        - default: asc
+          description: The order to sort the collection in. Can be 'asc' or 'desc'.
+          name: sort-order
+          enum:
+            - asc
+            - desc
+          type: string
+          required: false
+          in: query
+        - default: name
+          description: The property to sort the collection by.
+          name: sort-by
+          type: string
+          required: false
+          in: query
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/EstateSearchResults'
+          description: The search results for the given provider search parameters. 
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            Date:
+              description: Response parameter. Date/time the response was generated (in Greenwich mean time).
+              format: date-time
+              type: string
+            Service-Version:
+              description: The minor version of the API.
+              type: string
+        '400':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: The combination of search enquiry parameters is invalid.
+        '401':
+          description: The requester is not authenticated.
+        '403':
+          description: The requester is not authorised for this operation.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.
+  '/claim':
+    get:
+      summary: Gets a search result of claims
+      description: >-
+        Search the insolvency register for a claim.
+      produces:
+        - application/json
+      tags:
+        - Claims
+      parameters:
+        - description: The type of the insolvency procedure, leave blank for all
+          name: businessService
+          type: string
+          required: false
+          in: query
+        - description: The state of the insolvency procedure, leave blank for all
+          name: status
+          enum:
+            - potential
+            - recieved
+            - suspended
+            - admitted
+            - duplicate
+            - vetted
+            - error
+            - withdrawn
+            - rejected
+          type: string
+          required: false
+          in: query
+        - default: 1
+          minimum: 1
+          description: The page in the collection to return. Default is page 1.
+          name: page
+          type: integer
+          required: false
+          in: query
+        - default: 20
+          minimum: 1
+          description: >-
+            The requested number of items to include in each page returned.
+            Default is 20.
+          name: page-size
+          type: integer
+          required: false
+          in: query
+        - default: asc
+          description: The order to sort the collection in. Can be 'asc' or 'desc'.
+          name: sort-order
+          enum:
+            - asc
+            - desc
+          type: string
+          required: false
+          in: query
+        - default: name
+          description: The property to sort the collection by.
+          name: sort-by
+          type: string
+          required: false
+          in: query
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/ClaimSearchResult'
+          description: The search results for the given provider search parameters.
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            Date:
+              description: Response parameter. Date/time the response was generated (in Greenwich mean time).
+              format: date-time
+              type: string
+            Service-Version:
+              description: The minor version of the API.
+              type: string
+        '400':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: The combination of search enquiry parameters is invalid.
+        '401':
+          description: The requester is not authenticated.
+        '403':
+          description: The requester is not authorised for this operation.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.
+    post:
+      summary: Adds a new claim for processing
+      tags:
+        - Claims
+      description: >-
+        Adds a new claim to the estate(s) company with the given estate identifier (s). 
+      parameters:
+      - schema:
+          $ref: '#/definitions/ClaimApplication'
+        name: claim
+        required: true
+        in: body
+      - $ref: "#/parameters/RequestIdParameter"
+      consumes:
+        - application/json
+      responses:
+        '201':
+          schema:
+            items:
+              $ref: '#/definitions/ClaimDetail'
+            type: array
+          description: Claim application(s) created.
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            eTag:
+              description: Unique identifier confirming the latest version of the resource.
+              type: string
+            date:
+              description: >
+                Response parameter. Date/time the response was generated (in
+                Greenwich mean time).
+              format: date-time
+              type: string
+            service-version:
+              description: The minor version of the API.
+              type: string
+        '400':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: Invalid request data.
+        '401':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: Unauthorized.
+        '403':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: Insufficient prviledges.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.
+    put:
+      summary: Modifies a claim
+      tags:
+        - Claims
+      description: >-
+        Modifies an existing claim if the uuid / etag matches the submitted resource.
+      parameters:
+      - schema:
+          $ref: '#/definitions/ClaimApplication'
+        name: claim
+        required: true
+        in: body
+      - $ref: '#/parameters/RequestIdParameter'
+      - $ref: '#/parameters/IfMatchParameter'
+      - $ref: '#/parameters/IfUnmodifedSinceParameter'
+      consumes:
+        - application/json
+      responses:
+        '201':
+          schema:
+            items:
+              $ref: '#/definitions/ClaimDetail'
+            type: array
+          description: Claim application(s) created.
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            eTag:
+              description: Unique identifier confirming the latest version of the resource.
+              type: string
+            date:
+              description: >-
+                Response parameter. Date/time the response was generated (in
+                Greenwich mean time).
+              format: date-time
+              type: string
+            service-version:
+              description: The minor version of the API.
+              type: string
+        '400':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: Invalid request data.
+        '401':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: Unauthorized.
+        '403':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: The request must contain at least one of If-Unmodified-Since or If-Match http headers. Please GET a fresh representation and try again.
+        '413':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: The request precondition failed. Pleae GET a fresh representation and try again.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.        
+  '/claim/{claim_number}':
+    get:
+      summary: Gets  claim details
+      description: >-
+        Claims is not implemented as a sub resource of Estate as the cardinalitiy to estate is actually 0 or n.
+      produces:
+        - application/json
+      tags:
+        - Claims
+      parameters:
+        - description: >-
+            The unique claim number
+          name: claim_number
+          required: true
+          type: integer
+          in: path
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/ClaimDetail'
+          description: The detail for the given claim record.
+          headers:
+            api-business-govt-nz-Request-Id:
+              description: MBIE Request id header
+              type: string
+            api-business-govt-nz-Correlation-Id:
+              description: MBIE Correlation id header
+              type: string
+            Date:
+              description: Response parameter. Date/time the response was generated (in Greenwich mean time).
+              format: date-time
+              type: string
+            Service-Version:
+              description: The minor version of the API.
+              type: string
+        '400':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: The combination of search enquiry parameters is invalid.
+        '401':
+          description: The requester is not authenticated.
+        '403':
+          description: The requester is not authorised for this operation.
+        '500':
+          schema:
+            $ref: '#/definitions/ErrorDescription'
+          description: An unexpected internal server error occurred.
+parameters:
+  RequestIdParameter:
+    in: header
+    name: api-business-govt-nz-Request-Id
+    description: Request id. Provide a UUID that is unique to this request.  This header is optional.
+    required: false
+    type: string
+  IfMatchParameter:
+    in: header
+    name: If-Match
+    description: Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.
+    required: true
+    type: string
+  IfNoneMatchParameter:
+    in: header
+    name: If-None-Match
+    description: Optimisation mechanism to indicate that a GET should only return the requested object if the current version of the object does not have an ETag matching the value supplied.
+    required: false
+    type: string
+  IfUnmodifedSinceParameter:
+    in: header
+    name: If-Unmodified-Since
+    description: Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.
+    required: false
+    format: date
+    type: string  
+
+definitions:
+
+# ----------------------------- Claims ---------------------------------------
+#  - ClaimDetail
+#  - Claim
+#  - ClaimApplication
+#  - ClaimApplicationUpdate  
+#
+
+  ClaimDetail:
+    description: >-
+      Detail of a submitted claim. 
+    discriminator: entityType
+    type: object
+    properties:
+      claimId:
+        description: >-
+         Unique identifier for the claim.
+        type: integer
+        example: 32164315
+      estateId:
+        example: 789468
+        type: integer
+        description: >-
+          unique id for the estate the claim is attached to.      
+      insolvencyType:
+        description: >-
+         The business service / the kind of process the debtor is going through.
+        type: string
+        example: Bankruptcy
+      createdName:
+        description: >-
+         The name of the user / organision that filed this claim.
+        example: 'John Smith'
+        type: string
+        minimum: 1
+        exclusiveMinimum: true
+        maximum: 50
+      createdBy:
+        description: >-
+         The user name of the user that created the claim.
+        example: 'JohnS'
+        type: string
+      created:
+        description: >-
+         The date the claim was created.
+        format: date
+        example: '2016-06-01T00:00:00.000Z'
+        type: string
+      status:
+        description: The current state of the claim. Available state transitions depend on role.
+        example: withdrawn
+        type: string
+        enum:
+          - potential
+          - recieved
+          - suspended
+          - admitted
+          - duplicate
+          - vetted
+          - error
+          - withdrawn
+          - rejected  
+      applicationType:
+        description: >-
+          The loose "type" of claim - used to assist with determining priorty.
+        example: 'Wages, holiday pay or redundancy'
+        type: string
+        enum: 
+          - Wages, holiday pay or redundancy
+          - Court awarded adjudication
+          - Unpaid taxes or levies
+          - Secured debt
+          - Part of current court action
+          - Interest
+      claimDescription:
+        description: >-
+         The user name of the user that created the claim.
+        example: 'Owed 30 weeks of unpaid wages plus holiday pay. Note that this description could be very long.'
+        type: string
+      version:
+        description: >-
+         The unique version number of the claim record.
+        example: 6
+        type: integer 
+      statusDate:
+        description: >-
+         The date of the last state transition.
+        format: date
+        example: '2016-06-01T00:00:00.000Z'
+        type: string
+      underApplealYN:
+        description: >-
+         Flag indicating if the insolvency is surrently under appeal
+        example: false
+        type: boolean
+      priory:
+        description: >-
+         The determined priority of the claim.
+        example: 3
+        type: integer 
+      creditorReference:
+        description: >-
+         The non-unique reference number provided by the creditor.
+        example: 'ABC-CORP-0001'
+        type: string  
+      notifiedValue:
+        description: >-
+         The value of the (potential) claim as included in the claim application or statement of affairs.
+        example: 51000
+        type: integer 
+      claimValue:
+        description: >-
+         The value of the claim as accepted into the insolcency precedure.
+        example: 50501
+        type: integer
+      claimValueTba:
+        description: >-
+         Flag indicating whether the value of the claim has been deterined by ITS or not.
+        example: true
+        type: boolean
+      contractIntetest:
+        description: >-
+         -?.
+        example: '??? ???'
+        type: string
+      irdNumber:
+        description: >-
+         The IRD number of the claimant.
+        example: 987654321
+        type: integer
+      includeOaNumberGstYn :
+        description: >-
+         -?.
+        example: false
+        type: boolean
+      oaGstAmount:
+        description: >-
+          The amount of GST due to AO services.
+        example: 10000
+        type: integer
+      wagesTaxRate:
+        description: >-
+         The applicable tax rate of wages related to the claim.
+        example: 28
+        type: integer  
+      comments:
+        description: >-
+         OA comments
+        example: 'Comment about the specifics of the claim.'
+        type: string    
+      itsAwareDate:
+        description: >-
+         -?.
+        format: date
+        example: '2016-06-01T00:00:00.000Z'
+        type: string   
+      loggedWithItsDate:
+        description: >-
+         -?.
+        format: date
+        example: '2016-06-01T00:00:00.000Z'
+        type: string   
+      admittedValue:
+        description: >
+          -?.
+        example: 50100
+        type: integer  
+      withdrawnReason:
+        description: >
+         If withdrwan, the reasons for the withdrwal.
+        example: 'Reason for withdrwal.'
+        type: string
+      withdrwanByName:
+        description: >
+         The logged in user that withdrew the claim application.
+        example: 'John Smith'
+        type: string
+      withdrawnDate:
+        description: >-
+         If withdrawn, the date withdrawn.
+        format: date
+        example: '2016-06-01T00:00:00.000Z'
+        type: string
+      jointPaidToDate:
+        description: >
+         -?.
+        example: '??? ???'
+        type: string  
+      ringfenceTypeCode:
+        description: >
+         -?.
+        example: '??? ???'
+        type: string  
+      reasonForChange:
+        description: >
+         -?.
+        example: '??? ???'
+        type: string
+      largeClaimFiledAlertSent:
+        description: >
+         -?.
+        example: false
+        type: boolean
+      creditReportSent:
+        description: >-
+         -?.
+        example: '??? ???'
+        type: string  
+      links:
+          items:
+            - href: 'https://app.insolvency.govt.nz/oasis4/services/claims/{claimId}'
+              rel: self
+              method: GET
+            - href: 'https://app.insolvency.govt.nz/oasis4/services/claims/{claimId}'
+              rel: replace
+              method: PUT
+            - href: 'https://app.insolvency.govt.nz/oasis4/services/claims/{claimId}/status/withdrawn'
+              rel: delete
+              method: PUT
+          example: [
+                    {
+                      href: https://app.insolvency.govt.nz/oasis4/services/claims/4855682,
+                      rel: self,
+                      method: GET
+                    },
+                    {     
+                      href: https://app.insolvency.govt.nz/oasis4/services/claims/468168,
+                      rel: replace,
+                      method: PUT
+                    },
+                    {     
+                      href: https://app.insolvency.govt.nz/oasis4/services/claims/468168/status/withdrawn,
+                      rel: withdraw,
+                      method: PUT
+                    }
+                   ]
+          description: List of hypermedia operations adjacent the to the curent claim resource.
+ 
+ 
+  
+  Laboratory:
+      description: Scratch pad for stuff I am figuring out..
+      allOf:
+        - properties:
+            links:
+              items:
+                - href: 'https://app.insolvency.govt.nz/oasis4/services/claims/{claimId}'
+                  rel: self
+                - href: 'https://app.insolvency.govt.nz/oasis4/services/claims/{claimId}'
+                  rel: delete
+                  method: DELETE
+              example: [
+                        {
+                          href: https://app.insolvency.govt.nz/oasis4/services/claims/4855682,
+                          rel: self
+                        },
+                        {     
+                          href: https://app.insolvency.govt.nz/oasis4/services/claims/468168,
+                          rel: delete,
+                          method: GET
+                        },
+                        {     
+                          href: https://app.insolvency.govt.nz/oasis4/services/claims/468168,
+                          rel: delete,
+                          method: PUT
+                        },
+                        {     
+                          href: https://app.insolvency.govt.nz/oasis4/services/claims/468168,
+                          rel: delete,
+                          method: DELETE
+                        }
+                       ]
+              description: The array of results
+              type: array
+          type: object  
+          
+  ClaimApplication:
+      description: >-
+        A claim is an assertion by a creditor that they are owed funds in an
+        insolvency procedure. In order to be accepted into Trust Accounting a
+        claim must be both substantiated and accepted. 
+      discriminator:
+        propertyName: entityType
+      type: object
+      properties:
+        estates:
+          items:
+            example: '7894681, 465484'
+            type: integer
+            description: Other names applicable to Individual.
+          type: array
+        insolvencyType:
+          description: >-
+            The business service / the kind of process the debtor is going
+            through.
+          type: string
+          example: Bankruptcy
+        createdName:
+          description: The name of the user / organision that filed this claim.
+          example: John Smith
+          type: string
+        createdBy:
+          description: The user name of the user that created the claim.
+          example: JohnS
+          type: string
+        applicationType:
+          description: The loose "type" of claim - used to assist with determining priorty.
+          example: 'Wages, holiday pay or redundancy'
+          type: string
+          enum:
+            - Wages, holiday pay or redundancy
+            - Court awarded adjudication
+            - Unpaid taxes or levies
+            - Secured debt
+            - Part of current court action
+            - Interest
+        claimDescription:
+          description: The user name of the user that created the claim.
+          example: >-
+            Owed 30 weeks of unpaid wages plus holiday pay. Note that this
+            description could be very long.
+          type: string
+          
+  ClaimApplicationUpdate:
+      description: >
+       This entity is used by customer.  
+      discriminator:
+        propertyName: entityType
+      type: object
+      properties:
+        estates:
+          description: >
+            The business service / the kind of process the debtor is going
+          items:
+            example: '7894681, 465484'
+            type: integer
+            description: Other names applicable to Individual.
+          type: array
+        ClientReference:
+          description: >
+            The business service / the kind of process the debtor is going
+            through.
+          type: string
+          example: Bankruptcy
+        createdName:
+          description: The name of the user / organision that filed this claim.
+          example: John Smith
+          type: string
+        createdBy:
+          description: The user name of the user that created the claim.
+          example: JohnS
+          type: string
+        applicationType:
+          description: The loose "type" of claim - used to assist with determining priorty.
+          example: 'Wages, holiday pay or redundancy'
+          type: string
+          enum:
+            - Wages, holiday pay or redundancy
+            - Court awarded adjudication
+            - Unpaid taxes or levies
+            - Secured debt
+            - Part of current court action
+            - Interest
+        claimDescription:
+          description: The user name of the user that created the claim.
+          example: >-
+            Owed 30 weeks of unpaid wages plus holiday pay. Note that this
+            description could be very long.
+          type: string 
+
+# ----------------------------- Estates ---------------------------------------
+    
+  BankruptcyDetail:
+    description: >-
+      The
+    discriminator: entityType
+    type: object
+    allOf:
+      - properties:
+          estateNumber:
+            description: The estate number
+            example: 123456
+            type: string
+          insolvencyType:
+            description: >-
+              The date the financial service provider last filed their annual
+              confirmation.
+            type: string
+            example: Adjudicated bankrupt on debtor's application under S.47
+          name:
+            description: >-
+              The date the financial service provider was registered and became
+              accessible on the public register.
+            example: 'John Smith'
+            type: string
+          alternateNames:
+            items:
+              example: Joe Bloggs
+              type: string
+            description: Other names applicable to Individual.
+            type: array
+          monthYearBirth:
+            description: >-
+              The date the financial service provider was registered and became
+              accessible on the public register.
+            example: March 1989
+            type: string
+          tradingName:
+            description: >-
+              POssible trading names of the individual.
+            type: string
+            example: Address not available
+          addressAtAdjudication:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Address not available
+          suppliedAddress:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Address not available
+          insolvencyStatus:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Currently in Liquidation
+          ajudicationDateTime:
+            description: >-
+              List of directors and shareholders of the company.
+            format: date
+            example: '2016-06-01T00:00:00.000Z'
+            type: string
+          court:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Hamilton High Court
+          occupationAtAdjudication:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: IT Contractor
+          employmentStatus:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Currently employed
+          multipleInsolvencies:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: No
+          dischargeDate:
+            description: >-
+              List of directors and shareholders of the company.
+            format: date
+            example: '2016-06-01T00:00:00.000Z'
+            type: string
+          petitionType:
+            description: >-
+              List of directors and shareholders of the company.
+            example: Debtor Petition
+            type: string
+          officeForEnquiries:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Christchurch
+          link:
+            $ref: '#/definitions/Link'
+  LiquidationDetail:
+    description: >-
+      The
+    discriminator: entityType
+    type: object
+    allOf:
+      - properties:
+          estateNumber:
+            description: The estate number
+            example: 123456
+            type: string
+          insolvencyType:
+            description: >-
+              The date the financial service provider last filed their annual
+              confirmation.
+            type: string
+            example: Adjudicated bankrupt on debtor's application under S.47
+          name:
+            description: >-
+              The date the financial service provider was registered and became
+              accessible on the public register.
+            example: 'John Smith'
+            type: string
+          alternateNames:
+            items:
+              example: Joe Bloggs
+              type: string
+            description: Other names applicable to Individual.
+            type: array
+          monthYearBirth:
+            description: >-
+              The date the financial service provider was registered and became
+              accessible on the public register.
+            example: March 1989
+            type: string
+          directorsShareholders:
+            description: >-
+              List of directors and shareholders of the company.
+            type: array
+            items:
+              example: Joe Bloggs
+              type: string
+          addressAtAdjudication:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Address not available
+          suppliedAddress:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Address not available
+          insolvencyStatus:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Currently in Liquidation
+          liquidationDateTime:
+            description: >-
+              List of directors and shareholders of the company.
+            format: date
+            example: '2016-06-01T00:00:00.000Z'
+            type: string
+          court:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Hamilton High Court
+          occupationAtAdjudication:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: IT Contractor
+          employmentStatus:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Currently employed
+          multipleInsolvencies:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: No
+          dischargeDate:
+            description: >-
+              List of directors and shareholders of the company.
+            format: date
+            example: '2016-06-01T00:00:00.000Z'
+            type: string
+          petitionType:
+            description: >-
+              List of directors and shareholders of the company.
+            example: Debtor Petition
+            type: string
+          officeForEnquiries:
+            description: >-
+              List of directors and shareholders of the company.
+            type: string
+            example: Christchurch
+          link:
+            $ref: '#/definitions/Link'
+  Link:
+    description: JSON representation of the ATOM pub link format
+    properties:
+      rel:
+        description: >-
+          The rel attribute specifies the relationship between the current
+          resource and the linked resource.
+        example: self
+        type: string
+      href:
+        description: Specifies the URL of the resource the link goes to
+        example: >-
+          http://api.business.govt.nz/v1/insolvency/
+        type: string
+    required:
+      - rel
+      - href
+  ClaimSearchResult:
+    description: A single claim search summary result
+    allOf:
+      - properties:
+          claimNumber:
+            type: string
+            example: 1234567
+            description: The unique insolvency register number
+          createdName:
+            type: string
+            example: John Smith
+            description: The name of the person  who creted the claim
+          created:
+            items:
+              example: Joe Bloggs
+              type: string
+            description: Other names applicable to Individual.
+            type: array
+          description:
+            example: 'Description of the specifics of the claim'
+            type: string
+          status:
+            example: 'Withdrawn'
+            type: string
+            enum: 
+              - potential
+              - recieved
+              - suspended
+              - admitted
+              - duplicate
+              - vetted
+              - error
+              - withdrawn
+              - rejected
+          link:
+            description: Link to the detail record
+            $ref: '#/definitions/Link'
+        type: object    
+  EstateSearchResult:
+    description: A single bankruptcy search summary result
+    allOf:
+      - properties:
+          estateNumber:
+            type: string
+            example: 1234567
+            description: The unique insolvency register number
+          name:
+            type: string
+            example: John Smith
+            description: The Main name of the Individual
+          alternateNames:
+            items:
+              example: Joe Bloggs
+              type: string
+            description: Other names applicable to Individual.
+            type: array
+          status:
+            type: string
+            example: Bankrupt (Current)
+            description: The current status of the insolvency
+          link:
+            description: Link to the detail record
+            $ref: '#/definitions/Link'
+        type: object
+  ErrorDescription:
+    description: Representation of generic error response
+    properties:
+      errorMessage:
+        example: Request failed
+        type: string
+      errorCode:
+        example: E01
+        type: string
+      errorDescription:
+        example: An unexpected error occurred servicing the request.
+        type: string
+    required:
+      - errorCode
+      - errorMessage
+  CollectionMetadata:
+    description: Metadata associated with a paginated collection
+    properties:
+      sortBy:
+        description: >-
+          The property the collection is sorted on. This is optional and may not
+          be supported by all collections
+        example: name
+        type: string
+      page:
+        minimum: 1
+        description: The page in the collection
+        example: 1
+        type: integer
+      sortOrder:
+        description: >-
+          The order the collection is sorted in. This is optional and may not be
+          supported by all collections. Valid values are 'asc', 'desc'
+        enum:
+          - asc
+          - desc
+        example: asc
+        type: string
+      totalItems:
+        description: The total number of results/items in this collection
+        example: 42
+        type: integer
+      pageSize:
+        description: The number of results/items returned per page of results
+        example: 20
+        type: integer
+      links:
+        items:
+          $ref: '#/definitions/Link'
+        type: array
+        description: The list of links to navigate this collection
+      totalPages:
+        description: >-
+          The number of pages in the collection given the current pageSize. 
+          Note this will have the value ceiling(totalItems / pageSize).
+        example: 13
+        type: integer
+    required:
+      - page
+      - pageSize
+      - totalItems
+      - totalPages
+      - links
+  EstateSearchResults:
+    description: >-
+      Paged collection of the results returned for an oasis
+      search.
+    allOf:
+      - $ref: '#/definitions/CollectionMetadata'
+      - properties:
+          searchCriteria:
+            description: The search criteria
+            example: >-
+              Name starts with 'AA', status = All
+            type: string
+          items:
+            items:
+              $ref: '#/definitions/EstateSearchResult'
+            description: The array of results
+            type: array
+        type: object
