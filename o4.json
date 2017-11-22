@@ -700,18 +700,7 @@
             }
           }
         }
-      },
-      "parameters": [
-        {
-          "name": "businessService2",
-          "in": "query",
-          "required": true,
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      ]
+      }
     },
     "/claim/{claim_number}": {
       "get": {
@@ -769,6 +758,112 @@
           },
           "403": {
             "description": "The requester is not authorised for this operation."
+          },
+          "500": {
+            "description": "An unexpected internal server error occurred.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Claims"
+        ],
+        "summary": "Modifies a claim",
+        "description": "Modifies a claim",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "claim",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClaimApplication"
+            }
+          },
+          {
+            "name": "api-business-govt-nz-Request-Id",
+            "in": "header",
+            "description": "Request id. Provide a UUID that is unique to this request.  This header is optional.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "If-Unmodified-Since",
+            "in": "header",
+            "description": "Optimistic concurrency control to ensure a resource being updated is the most recent. Must be supplied for PUT and DELETE operations and should contain the ETag from the most recent GET, PUT or POST operation for this resource.",
+            "required": false,
+            "type": "string",
+            "format": "date"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Claim application(s) created.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ClaimDetail"
+              }
+            },
+            "headers": {
+              "api-business-govt-nz-Request-Id": {
+                "description": "MBIE Request id header",
+                "type": "string"
+              },
+              "api-business-govt-nz-Correlation-Id": {
+                "description": "MBIE Correlation id header",
+                "type": "string"
+              },
+              "eTag": {
+                "description": "Unique identifier confirming the latest version of the resource.",
+                "type": "string"
+              },
+              "date": {
+                "description": "Response parameter. Date/time the response was generated (in Greenwich mean time).",
+                "type": "string",
+                "format": "date-time"
+              },
+              "service-version": {
+                "description": "The minor version of the API.",
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "403": {
+            "description": "The request must contain at least one of If-Unmodified-Since or If-Match http headers. Please GET a fresh representation and try again.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
+          },
+          "413": {
+            "description": "The request precondition failed. Pleae GET a fresh representation and try again.",
+            "schema": {
+              "$ref": "#/definitions/ErrorDescription"
+            }
           },
           "500": {
             "description": "An unexpected internal server error occurred.",
